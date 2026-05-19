@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary: 217 91% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 30%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Status badge color variants */
+.status-not-open {
+  background-color: rgb(241 245 249);
+  color: rgb(51 65 85);
+  border: 1px solid rgb(203 213 225);
+}
+.status-open {
+  background-color: rgb(220 252 231);
+  color: rgb(22 101 52);
+  border: 1px solid rgb(134 239 172);
+}
+.status-closing {
+  background-color: rgb(254 243 199);
+  color: rgb(133 77 14);
+  border: 1px solid rgb(253 224 71);
+}
+.status-awaiting {
+  background-color: rgb(219 234 254);
+  color: rgb(30 64 175);
+  border: 1px solid rgb(147 197 253);
+}
+.status-noc {
+  background-color: rgb(254 226 226);
+  color: rgb(153 27 27);
+  border: 1px solid rgb(252 165 165);
+}
+.status-closed {
+  background-color: rgb(241 245 249);
+  color: rgb(100 116 139);
+  border: 1px solid rgb(203 213 225);
+}
