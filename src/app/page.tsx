@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ShieldAlert } from "lucide-react";
 import { CalculatorForm } from "@/components/CalculatorForm";
+import { AudioIntro } from "@/components/AudioIntro";
 
 export default function HomePage() {
   return (
@@ -39,6 +40,10 @@ export default function HomePage() {
             Enter your RSV day, choose your time zone, and get reminded when your drop window opens.
           </p>
         </section>
+
+        <div className="mb-6 max-w-3xl">
+          <AudioIntro />
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
