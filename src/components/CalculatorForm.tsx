@@ -241,6 +241,14 @@ export function CalculatorForm() {
               />
             </fieldset>
 
+            <fieldset className="space-y-3 rounded-lg border bg-secondary/40 p-4">
+              <legend className="px-1 text-sm font-semibold">Add to your calendar</legend>
+              <p className="text-xs text-muted-foreground">
+                Drop the three key moments into Apple Calendar, Google Calendar, or any app that opens .ics files. Each event arrives with two alarms pre-set: <strong>1 day before</strong> and <strong>2 hours before</strong>.
+              </p>
+              <CalendarButtons rsvWindow={calc?.w} />
+            </fieldset>
+
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">
                 You can set reminders days or weeks in advance.
@@ -322,8 +330,6 @@ export function CalculatorForm() {
               <strong>Reminder:</strong> Crew Scheduling will <em>not</em> contact you. You must verify the
               outcome of your drop request yourself in NOC.
             </div>
-
-            <CalendarButtons rsvWindow={calc.w} />
           </CardContent>
         </Card>
       )}
