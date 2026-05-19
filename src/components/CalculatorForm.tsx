@@ -165,7 +165,7 @@ export function CalculatorForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">State you&apos;ll be in</Label>
                 <Select
                   id="state"
                   value={form.stateCode}
@@ -177,12 +177,15 @@ export function CalculatorForm() {
                     </option>
                   ))}
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Pick the state where you&apos;ll be when your drop window opens. We use it to convert the 0900 / 0900 / 1900 Mountain Time anchors to your local time so you don&apos;t have to do the math.
+                </p>
               </div>
             </div>
 
             {state && state.zones.length > 1 && (
               <div className="space-y-2">
-                <Label htmlFor="zone">Time zone (within {state.name})</Label>
+                <Label htmlFor="zone">Time zone within {state.name}</Label>
                 <Select
                   id="zone"
                   value={form.zone}
@@ -195,7 +198,7 @@ export function CalculatorForm() {
                   ))}
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  {state.name} spans multiple zones. Pick the one matching your address.
+                  {state.name} spans more than one time zone. Pick the one matching where you&apos;ll physically be.
                 </p>
               </div>
             )}
