@@ -63,6 +63,22 @@ function toIcsUtc(utcIso: string): string {
   return DateTime.fromISO(utcIso, { zone: "utc" }).toFormat("yyyyLLdd'T'HHmmss'Z'");
 }
 
+/**
+ * Default alarm triggers added to every generated calendar event.
+ *
+ * The user asked for two notifications by default:
+ *   - 1 day before the event
+ *   - 2 hours before the event
+ *
+ * ICS uses ISO 8601 durations with a leading "-" for "before":
+ *   -P1D   = 1 day before
+ *   -PT2H  = 2 hours before
+ *
+ * Calendar apps respect these on import. Users can delete or
+ * customize alarms inside their own calendar after import.
+ */
+const DEFAULT_ALARM_TRIGGERS = ["-P1D", "-PT2H"] as const;
+
 /** Escape ICS text per RFC 5545. */
 function escapeIcsText(s: string): string {
   return s
@@ -121,13 +137,19 @@ export function buildIcs(
       `DTEND:${dtEnd}`,
       foldLine(`SUMMARY:${escapeIcsText(evt.title)}`),
       foldLine(`DESCRIPTION:${escapeIcsText(evt.description)}`),
-      "BEGIN:VALARM",
-      "ACTION:DISPLAY",
-      foldLine(`DESCRIPTION:${escapeIcsText(evt.title)}`),
-      "TRIGGER:-PT0M",
-      "END:VALARM",
-      "END:VEVENT",
     );
+
+    for (const trigger of DEFAULT_ALARM_TRIGGERS) {
+      lines.push(
+        "BEGIN:VALARM",
+        "ACTION:DISPLAY",
+        foldLine(`DESCRIPTION:${escapeIcsText(evt.title)}`),
+        `TRIGGER:${trigger}`,
+        "END:VALARM",
+      );
+    }
+
+    lines.push("END:VEVENT");
   }
 
   lines.push("END:VCALENDAR");
