@@ -39,43 +39,12 @@ export default async function OgImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          position: "relative",
-          background:
-            "linear-gradient(135deg, #0b1e4c 0%, #0b3b8a 55%, #1d4ed8 100%)",
+          background: "#0b3b8a",
           fontFamily: "system-ui, sans-serif",
           color: "#ffffff",
           padding: "72px 80px",
-          overflow: "hidden",
         }}
       >
-        {/* Decorative gold corner accent */}
-        <div
-          style={{
-            position: "absolute",
-            top: -120,
-            right: -120,
-            width: 360,
-            height: 360,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle at center, rgba(234,179,8,0.45) 0%, rgba(234,179,8,0.0) 70%)",
-            display: "flex",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: -100,
-            left: -100,
-            width: 300,
-            height: 300,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle at center, rgba(56,189,248,0.35) 0%, rgba(56,189,248,0.0) 70%)",
-            display: "flex",
-          }}
-        />
-
         {/* Header row */}
         <div
           style={{
@@ -163,11 +132,8 @@ export default async function OgImage() {
               width: 360,
               height: 360,
               borderRadius: 36,
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 100%)",
-              border: "2px solid rgba(250,204,21,0.55)",
-              boxShadow:
-                "0 25px 60px -10px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.06)",
+              border: "2px solid #facc15",
               padding: 24,
             }}
           >

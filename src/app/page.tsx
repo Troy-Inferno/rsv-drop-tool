@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ShieldAlert } from "lucide-react";
 import { CalculatorForm } from "@/components/CalculatorForm";
 import { AudioIntro } from "@/components/AudioIntro";
+import { BookmarkButton } from "@/components/BookmarkButton";
 
 export default function HomePage() {
   return (
@@ -41,8 +42,9 @@ export default function HomePage() {
           </p>
         </section>
 
-        <div className="mb-6 max-w-3xl">
+        <div className="mb-6 grid max-w-3xl gap-3">
           <AudioIntro />
+          <BookmarkButton />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">

@@ -77,13 +77,13 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
   },
-  other: {
-    // iMessage / Apple Messages link preview hints — Apple parses the
-    // standard OG tags, but a few extras help with non-OG aware clients.
-    "og:image:secure_url": `${SITE_URL}/opengraph-image`,
-    "og:image:type": "image/png",
-    "theme-color": "#0b3b8a",
-  },
+  // Note: we intentionally do NOT add `other:` overrides for
+  // og:image:secure_url, og:image:type, or theme-color. Next.js already
+  // emits the correct property="og:image" with an HTTPS URL and the
+  // proper property="og:image:type" tag, and viewport.themeColor below
+  // emits theme-color. Adding them again via `other:` would either
+  // duplicate them or emit them with name="..." instead of property="..."
+  // which is not OG-spec compliant.
 };
 
 export const viewport: Viewport = {
