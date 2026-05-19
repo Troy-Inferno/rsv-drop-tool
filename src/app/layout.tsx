@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ClarityScript } from "@/components/ClarityScript";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 const TITLE = "RSV Drop Tool — Reserve Drop Window Calculator & Reminder System";
@@ -101,6 +102,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
         {children}
+        <ClarityScript />
       </body>
     </html>
   );
