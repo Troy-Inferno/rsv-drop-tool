@@ -1,5 +1,4 @@
 {
-  "comment": "Vercel Hobby plan only allows once-daily crons. This baseline runs once at 15:00 UTC (around 09:00 MT, when the drop window opens). For 5-min granularity, layer a GitHub Actions cron on top calling /api/cron/send-reminders with the CRON_SECRET as a Bearer token. See README.md > Cron.",
   "crons": [
     {
       "path": "/api/cron/send-reminders",
