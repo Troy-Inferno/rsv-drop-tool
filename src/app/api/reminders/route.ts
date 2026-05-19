@@ -11,6 +11,8 @@ import { getSupabase } from "@/lib/db";
 import { computeWindow } from "@/lib/rsv";
 import { createReminderSchema } from "@/lib/validation";
 import { hasSupabase } from "@/lib/env";
+import { checkAndRecord, clientIp } from "@/lib/rateLimit";
+import { isDisposableEmail } from "@/lib/disposableEmails";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +41,37 @@ export async function POST(req: NextRequest) {
       { ok: false, error: "Email is required to receive reminders." },
       { status: 400 },
     );
+  }
+
+  // Reject disposable / burner email domains so we don't waste sends on
+  // throwaway inboxes that never get read. We only check when an email
+  // was actually provided — calculator-only usage (no email) is unaffected.
+  if (input.email && isDisposableEmail(input.email)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "Disposable / temporary email addresses aren't supported. Please use a real inbox so you actually receive your reminders.",
+      },
+      { status: 400 },
+    );
+  }
+
+  // Per-IP rate limit on the public signup endpoint. We only consume a
+  // rate-limit slot when the request actually wants to write to the DB
+  // (either reminders OR an email signup). Pure calculations without a
+  // DB write don't burn the budget.
+  const shouldRateLimit =
+    hasSupabase() && (wantsAnyReminder || Boolean(input.email));
+  if (shouldRateLimit) {
+    const ip = clientIp(req);
+    const rl = await checkAndRecord(ip);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { ok: false, error: rl.error, resetAt: rl.resetAt },
+        { status: 429 },
+      );
+    }
   }
 
   let rsvWindow;

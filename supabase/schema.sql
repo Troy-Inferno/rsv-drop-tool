@@ -51,9 +51,26 @@ create index if not exists email_users_unsub_idx
   on public.email_users (unsubscribed_at);
 
 -- ---------------------------------------------------------------------------
+-- rate_limits
+-- Stores one row per form submission, keyed by client IP, so the reminder
+-- API can enforce a per-IP cap (e.g. "no more than N submissions per hour").
+-- Rows older than the throttle window are effectively ignored; you can
+-- periodically clean them up if growth becomes an issue, but they're tiny.
+-- ---------------------------------------------------------------------------
+create table if not exists public.rate_limits (
+  id            bigserial primary key,
+  ip            text        not null,
+  attempted_at  timestamptz not null default now()
+);
+
+create index if not exists rate_limits_ip_time_idx
+  on public.rate_limits (ip, attempted_at desc);
+
+-- ---------------------------------------------------------------------------
 -- Row Level Security
 -- We never expose these tables to the anon role. All access is from the
 -- server using the service role key, so we enable RLS and add no policies.
 -- ---------------------------------------------------------------------------
 alter table public.reminder_requests enable row level security;
 alter table public.email_users        enable row level security;
+alter table public.rate_limits        enable row level security;
