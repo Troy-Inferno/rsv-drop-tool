@@ -1,0 +1,58 @@
+name: Send due reminder emails
+
+# Pings the production /api/cron/send-reminders endpoint every 5 minutes.
+# This complements (and effectively replaces) Vercel Hobby's daily cron —
+# Vercel can only schedule once-per-day on the free tier, but our reminders
+# (especially the NOC-check at 1900 MT) need finer-grained dispatch so they
+# land within minutes of the trigger time, not 14 hours later.
+#
+# Why GitHub Actions:
+#   - 5-minute schedules are allowed on free repos (private + public).
+#   - Idempotent: the endpoint marks rows as sent_at, so repeated pings
+#     never double-send. Safe to over-fire.
+#   - Free up to 2,000 Actions minutes/month for private repos
+#     (unlimited for public). Each run is ~3 seconds, so monthly
+#     consumption is well under 100 minutes total.
+#
+# Caveats:
+#   - GitHub Actions cron is best-effort. During platform load spikes it can
+#     drift by 5-15 minutes. For RSV reminders that's still fine — the worst
+#     case is "your NOC reminder is 10 minutes late" instead of "14 hours
+#     late". If real-time precision becomes critical, upgrade Vercel Pro
+#     and switch the cron config back to `*/5 * * * *` in vercel.json.
+#   - Required GitHub repo secret: CRON_SECRET — must match the same value
+#     you set in Vercel env vars. Set it in:
+#       Repo → Settings → Secrets and variables → Actions → New repository secret.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  # Allow firing manually from the Actions tab for ad-hoc testing.
+  workflow_dispatch:
+
+# Don't pile up runs if one is slow; cancel any pending duplicates.
+concurrency:
+  group: cron-reminders
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Trigger reminder dispatcher
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::CRON_SECRET repo secret is not set. Add it in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          # --fail makes curl exit non-zero on HTTP 4xx/5xx so failed
+          # pings surface as red runs in the Actions tab.
+          response=$(curl --fail --silent --show-error \
+            --max-time 60 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "https://www.rsvdroptool.com/api/cron/send-reminders")
+          echo "Response: ${response}"
