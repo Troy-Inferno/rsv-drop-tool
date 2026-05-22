@@ -383,14 +383,22 @@ function ReminderCell({
     return <span className="text-xs text-muted-foreground">—</span>;
   }
   // For "close" the trigger is 1h before the recorded close_time_utc.
+  // We also need the underlying close_time_utc itself to detect "missed":
+  // after close_time_utc has passed, the cron filter `close_time > now`
+  // permanently excludes the row, so it can never fire.
+  const closeDeadlineUtc = closeWarn ? triggerUtc : null; // close_time_utc as-is
   const effectiveTriggerUtc = closeWarn
     ? DateTime.fromISO(triggerUtc, { zone: "utc" }).minus({ hours: 1 }).toISO()!
     : triggerUtc;
   const triggerDt = DateTime.fromISO(effectiveTriggerUtc, { zone: "utc" }).setZone(zone);
+  const now = DateTime.utc();
 
   if (sentAt) {
     const sentDt = DateTime.fromISO(sentAt, { zone: "utc" });
-    const lagMin = Math.round(sentDt.diff(DateTime.fromISO(effectiveTriggerUtc, { zone: "utc" }), "minutes").minutes);
+    const lagMin = Math.round(
+      sentDt.diff(DateTime.fromISO(effectiveTriggerUtc, { zone: "utc" }), "minutes")
+        .minutes,
+    );
     return (
       <div className="text-xs">
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
@@ -399,6 +407,42 @@ function ReminderCell({
         </span>
         <div className="mt-1 text-muted-foreground">
           {lagMin >= 0 ? `+${lagMin} min` : `${lagMin} min`} from trigger
+        </div>
+      </div>
+    );
+  }
+
+  // Not sent. Decide between Missed (won't fire), Late (overdue, cron will
+  // pick it up on next tick), or Scheduled (in the future).
+  const closeDeadlinePassed = closeDeadlineUtc
+    ? now > DateTime.fromISO(closeDeadlineUtc, { zone: "utc" })
+    : false;
+
+  if (closeWarn && closeDeadlinePassed) {
+    // Close warning window expired; cron will never pick this up.
+    return (
+      <div className="text-xs">
+        <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 font-medium text-rose-700">
+          <TriangleAlert className="h-3 w-3" />
+          Missed
+        </span>
+        <div className="mt-1 text-muted-foreground">
+          Window {triggerDt.toFormat("ccc h:mm a")} passed
+        </div>
+      </div>
+    );
+  }
+
+  const triggerInPast = now > DateTime.fromISO(effectiveTriggerUtc, { zone: "utc" });
+  if (triggerInPast) {
+    return (
+      <div className="text-xs">
+        <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-700">
+          <Clock className="h-3 w-3" />
+          Late
+        </span>
+        <div className="mt-1 text-muted-foreground">
+          {triggerDt.toRelative()} · cron will catch
         </div>
       </div>
     );
